@@ -58,12 +58,19 @@ class App(QMainWindow):
         Equalize = OptionBar.addAction('Equalize Histogram')
 
         InputAction = QAction('Open Input', self)
+        InputAction.setShortcut('Ctrl+O')
         InputAction.triggered.connect(self.setInputBox)
         TargetAction = QAction('Open Target', self)
+        TargetAction.setShortcut('Ctrl+P')
         TargetAction.triggered.connect(self.setTargetBox)
+        QuitAction = QAction('Quit', self)
+        QuitAction.setShortcut('Ctrl+Q')
+        QuitAction.triggered.connect(qApp.quit)
+
 
         FileTab.addAction(InputAction)
         FileTab.addAction(TargetAction)
+        FileTab.addAction(QuitAction)
 
 
     def setInputBox(self):
