@@ -63,25 +63,22 @@ class App(QMainWindow):
 
         InputAction = QAction('Open Input', self)
         InputAction.setShortcut('Ctrl+O')
-        InputAction.triggered.connect(self.setInputBox)
         
         TargetAction = QAction('Open Target', self)
         TargetAction.setShortcut('Ctrl+P')
-        TargetAction.triggered.connect(self.setTargetBox)
         
         QuitAction = QAction('Quit', self)
         QuitAction.setShortcut('Ctrl+Q')
         
-        QuitAction.triggered.connect(qApp.quit)
-        FileTab.addAction(QuitAction)
-
         InputAction.triggered.connect(lambda: self.setHistogram(self.leftGroup,0))
         FileTab.addAction(InputAction)
 
-        TargetAction = QAction('Open Target', self)
         TargetAction.triggered.connect(lambda: self.setHistogram(self.centerGroup,1))
         FileTab.addAction(TargetAction)
 
+        QuitAction.triggered.connect(qApp.quit)
+        FileTab.addAction(QuitAction)
+        
     def setHistogram(self,targetBox,targetHistogram):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
