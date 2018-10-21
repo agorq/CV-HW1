@@ -16,20 +16,23 @@ class App(QMainWindow):
         self.title = 'Histogram Equalization'
         self.width = 1920
         self.height = 1080
-        self.inputImagePath = ""
-        self.targetImagePath = ""
-        self.inputLabel = ""
-        self.targetLabel = ""
-        self.resultLabel = ""
+
+        self.leftGroup = QGroupBox("Input")
+        QVBoxLayout(self.leftGroup)
+
+        self.centerGroup = QGroupBox("Target")
+        QVBoxLayout(self.centerGroup)
+
+        self.rightGroup = QGroupBox("Result")
+        QVBoxLayout(self.rightGroup)
+
+        self.input = 0
+        self.target = 0
         self.initUI()
  
     def initUI(self):
-        self.inputLabel = QLabel()
-        self.inputLabel.setAlignment(Qt.AlignCenter)
-        self.targetLabel = QLabel()
-        self.targetLabel.setAlignment(Qt.AlignCenter)
-        self.resultLabel = QLabel()
-        self.resultLabel.setAlignment(Qt.AlignCenter)
+        resultLabel = QLabel()
+        resultLabel.setAlignment(Qt.AlignCenter)
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -39,29 +42,9 @@ class App(QMainWindow):
         central = QWidget()
         hbox = QHBoxLayout(central)
 
-        left = QGroupBox("Input")
-        left.width = 640
-        center = QGroupBox("Target")
-        center.width = 640
-        right = QGroupBox("Result")
-        right.width = 640
-        
-        m = Histogram(left, width=5, height=4)
-        lvbox = QVBoxLayout(left)
-        lvbox.addWidget(self.inputLabel)
-        lvbox.addWidget(m)
-
-        cvbox = QVBoxLayout(center)
-        cvbox.addWidget(self.targetLabel)
-        #cvbox.addWidget(m)
-
-        rvbox = QVBoxLayout(right)
-        #rvbox.addWidget(self.inputLabel)
-        #rvbox.addWidget(m)
-
-        hbox.addWidget(left)
-        hbox.addWidget(center)
-        hbox.addWidget(right)
+        hbox.addWidget(self.leftGroup)
+        hbox.addWidget(self.centerGroup)
+        hbox.addWidget(self.rightGroup)
 
         self.setCentralWidget(central)
 
@@ -75,33 +58,52 @@ class App(QMainWindow):
         Equalize = OptionBar.addAction('Equalize Histogram')
 
         InputAction = QAction('Open Input', self)
-        InputAction.triggered.connect(self.openInputImage)
+        InputAction.triggered.connect(self.setInputBox)
         TargetAction = QAction('Open Target', self)
-        TargetAction.triggered.connect(self.openTargetImage)
+        TargetAction.triggered.connect(self.setTargetBox)
 
         FileTab.addAction(InputAction)
         FileTab.addAction(TargetAction)
 
 
-    def openInputImage(self):
+    def setInputBox(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "", "PNG files (*.png)", options=options)
         if fileName:
+            layout = self.leftGroup.layout()
+            self.input = Histogram(fileName,self.leftGroup)
+            
+            inputLabel = QLabel()
+            inputLabel.setAlignment(Qt.AlignCenter)
             inputPixmap = QPixmap(fileName)
-            self.inputLabel.setPixmap(inputPixmap)
+            inputLabel.setPixmap(inputPixmap)
 
-    def openTargetImage(self):
+            for i in reversed(range(layout.count())): 
+                layout.itemAt(i).widget().setParent(None)
+            layout.addWidget(inputLabel)
+            layout.addWidget(self.input)
+                
+
+
+    def setTargetBox(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "", "PNG files (*.png)", options=options)
         if fileName:
+            layout = self.centerGroup.layout()
+            self.target = Histogram(fileName,self.centerGroup)
+            
+            targetLabel = QLabel()
+            targetLabel.setAlignment(Qt.AlignCenter)
             targetPixmap = QPixmap(fileName)
-            self.targetLabel.setPixmap(targetPixmap)
- 
- 
+            targetLabel.setPixmap(targetPixmap)
 
- 
+            for i in reversed(range(layout.count())): 
+                layout.itemAt(i).widget().setParent(None)
+            layout.addWidget(targetLabel)
+            layout.addWidget(self.target)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = App()
