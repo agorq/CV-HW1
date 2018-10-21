@@ -26,8 +26,9 @@ class App(QMainWindow):
         self.rightGroup = QGroupBox("Result")
         QVBoxLayout(self.rightGroup)
 
-        self.input = 0
-        self.target = 0
+        #Had to use an array for histogram storage because of impossibility of passing references in lambda function used in connections
+        self.img=[0,0,0]
+        
         self.initUI()
  
     def initUI(self):
@@ -55,54 +56,52 @@ class App(QMainWindow):
         OptionBar = self.menuBar()
 
         FileTab = OptionBar.addMenu('File')
-        Equalize = OptionBar.addAction('Equalize Histogram')
+        
+        EqualizeAction = QAction('Equalize Histogram',self)
+        EqualizeAction.triggered.connect(self.equalizeHistogram)
+        OptionBar.addAction(EqualizeAction)
 
         InputAction = QAction('Open Input', self)
-        InputAction.triggered.connect(self.setInputBox)
-        TargetAction = QAction('Open Target', self)
-        TargetAction.triggered.connect(self.setTargetBox)
-
+        InputAction.triggered.connect(lambda: self.setHistogram(self.leftGroup,0))
         FileTab.addAction(InputAction)
+
+        TargetAction = QAction('Open Target', self)
+        TargetAction.triggered.connect(lambda: self.setHistogram(self.centerGroup,1))
         FileTab.addAction(TargetAction)
 
-
-    def setInputBox(self):
+    def setHistogram(self,targetBox,targetHistogram):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "", "PNG files (*.png)", options=options)
+        
         if fileName:
-            layout = self.leftGroup.layout()
-            self.input = Histogram(fileName,self.leftGroup)
+            layout = targetBox.layout()
+            self.img[targetHistogram] = Histogram(fileName,targetBox)
             
-            inputLabel = QLabel()
-            inputLabel.setAlignment(Qt.AlignCenter)
-            inputPixmap = QPixmap(fileName)
-            inputLabel.setPixmap(inputPixmap)
+            label = QLabel()
+            label.setAlignment(Qt.AlignCenter)
+            pixmap = QPixmap(fileName)
+            label.setPixmap(pixmap)
 
             for i in reversed(range(layout.count())): 
                 layout.itemAt(i).widget().setParent(None)
-            layout.addWidget(inputLabel)
-            layout.addWidget(self.input)
+            layout.addWidget(label)
+            layout.addWidget(self.img[targetHistogram])
                 
-
-
-    def setTargetBox(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "", "PNG files (*.png)", options=options)
-        if fileName:
-            layout = self.centerGroup.layout()
-            self.target = Histogram(fileName,self.centerGroup)
+    def equalizeHistogram(self):
+        self.img[0].equalize(self.img[1])
+        layout = self.rightGroup.layout()
+        self.img[2] = Histogram("./output.png",self.rightGroup)
             
-            targetLabel = QLabel()
-            targetLabel.setAlignment(Qt.AlignCenter)
-            targetPixmap = QPixmap(fileName)
-            targetLabel.setPixmap(targetPixmap)
+        label = QLabel()
+        label.setAlignment(Qt.AlignCenter)
+        pixmap = QPixmap("./output.png")
+        label.setPixmap(pixmap)
 
-            for i in reversed(range(layout.count())): 
-                layout.itemAt(i).widget().setParent(None)
-            layout.addWidget(targetLabel)
-            layout.addWidget(self.target)
+        for i in reversed(range(layout.count())): 
+            layout.itemAt(i).widget().setParent(None)
+        layout.addWidget(label)
+        layout.addWidget(self.img[2])
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
