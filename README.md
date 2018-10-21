@@ -15,3 +15,9 @@ The program is implemented on python 3.6.6 and should support all the versions w
 From file use Open Input to choose the input image then use Open Target to open the target image and finally press Equalize Histogram Button on menubar to match the histograms.
 
 ![An image showcasing basic user interface](/doc/image/howtouse.png)
+
+To run the program use the following command from code directory
+
+```console
+foo@bar:~$ python3 ui.py
+```
