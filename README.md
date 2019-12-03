@@ -1,5 +1,5 @@
 # CV-HW1
-This is the repository for first homework of Fall 2018 semester of course BLG453E Computer Vision. In this homework we were asked to make a histogram matching program using PyQt as UI.
+This is the repository for first homework of Fall 2018 semester course BLG453E Computer Vision. In this homework we were asked to make a histogram matching program using PyQt as UI.
 
 ## What is Histogram Matching?
 Histogram Matching is the action of matching an image's histogram to another specified histogram. To do that we first generate the CDF's of the input and target images then construct a look up table then change the values of input image corresponding to the forementioned table
